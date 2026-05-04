@@ -1,0 +1,28 @@
+[project]
+name = "project_flow"
+version = "0.1.0"
+description = "project-flow using crewAI"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "celery>=5.6.3",
+    "crewai[tools]==1.14.4",
+    "fastapi>=0.136.1",
+    "pydantic>=2.12.5",
+    "pydentic>=0.0.1.dev3",
+    "redis>=7.4.0",
+    "uvicorn>=0.46.0",
+]
+
+[project.scripts]
+kickoff = "project_flow.main:kickoff"
+run_crew = "project_flow.main:kickoff"
+plot = "project_flow.main:plot"
+run_with_trigger = "project_flow.main:run_with_trigger"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.crewai]
+type = "flow"
