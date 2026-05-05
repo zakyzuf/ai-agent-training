@@ -1,0 +1,8 @@
+.env
+__pycache__/
+lib/
+.DS_Store
+.venv/
+files_excel/*
+files_test/*
+files_json/*

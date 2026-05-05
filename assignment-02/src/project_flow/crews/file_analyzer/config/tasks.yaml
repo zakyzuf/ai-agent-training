@@ -1,0 +1,6 @@
+task_file_analyzer:
+  description: >
+    Conduct a thorough analysis of an existing {file} to extract key insights, identify trends, and provide actionable recommendations based on the content of the file.
+  expected_output: >
+    Insightful analysis of the {file} document, including key findings, trends, and actionable recommendations and a list of 5 key insights about the document.
+  agent: senior_file_analyzer

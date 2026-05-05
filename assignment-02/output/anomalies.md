@@ -1,0 +1,1 @@
+{'anomali': -25.00, 'total_data': 500}

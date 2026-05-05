@@ -1,0 +1,8 @@
+task_json_analyzer:
+  description: >
+    Conduct a thorough analysis of an existing {file} to extract key insights, identify trends, and provide actionable recommendations based on the content of the file.
+  expected_output: >
+    JSON objects containing insightful points and indicators about the cyclone data analysis, consisting of these topics :
+    cyclone inlet gas temp, cyclone material temp, cyclone outlet gas draft, cyclone cone draft, 
+    cyclone gas outlet temp and cyclone inlet draft.
+  agent: senior_json_analyzer
