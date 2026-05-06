@@ -28,8 +28,8 @@ class MarketResearchInput(BaseModel):
 class ResearchStatus(BaseModel):
     task_id: str
     status: str
-    result: dict | str = None
-    error: str = None
+    result: dict | str | None = None
+    error: str | None = None
     
 class AnalyzingInput(BaseModel):
     topic: str
@@ -176,3 +176,44 @@ async def deteksi_anomali_excel(file: UploadFile):
     
     task = celeryTask.deteksi_anomali_excel.delay(file_path)
     return {"task_id": task.id, "file_path": file_path}
+
+@app.post("/prophet-analyzer")
+async def prophet_analyzer(file: UploadFile = File(...)): 
+    
+    if file.content_type != 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Only Excel files are allowed.")
+    
+    _, file_extension = os.path.splitext(file.filename or "file")
+    file_extension = file_extension or ".xlsx"
+    unique_filename = f"{uuid.uuid4()}{file_extension}"
+    file_path = os.path.join(EXCEL_FOLDER, unique_filename)
+    
+    content = await file.read()
+    with open(file_path, "wb") as f:
+        f.write(content)
+    
+    task = celeryTask.prophet_analyzer_task.delay(file_path)
+    return {"task_id": task.id, "file_path": file_path}
+
+@app.get("/get-status-prophet/{task_id}", response_model=ResearchStatus)
+async def get_status_prophet(task_id: str):
+    task_result = celeryTask.celery_app.AsyncResult(task_id)
+    if task_result.state == "PENDING":
+        return ResearchStatus(task_id=task_id, status="PENDING")
+    elif task_result.state == "RUNNING":
+        return ResearchStatus(task_id=task_id, status="RUNNING")
+    elif task_result.state == "SUCCESS":
+        if isinstance(task_result.result, str):
+            try:
+                result = json.loads(task_result.result)
+            except Exception as e:
+                result = task_result.result
+        else:
+            result = task_result.result
+
+        return ResearchStatus(task_id=task_id, status="SUCCESS", result=result)
+        
+    elif task_result.state == "FAILURE":
+        return ResearchStatus(task_id=task_id, status="FAILURE", error=str(task_result.result))
+    else:
+        raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail="Unknown task state")

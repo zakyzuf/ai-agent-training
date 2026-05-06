@@ -1,0 +1,11 @@
+task_data_analyzer:
+  description: >
+    1. Use the provided tool to analyze and predict data from the {file} file.
+    2. Wait until the tool finishes running the Prophet model and returns the temperature prediction metrics for the next 1 hour.
+    3. Based on the prediction results from the tool, generate at least 5 analysis points (analyzer) that detail:
+       - Interpretation of the temperature trend (rising/falling/stable).
+       - Warnings regarding the maximum temperature limit (yhat_upper).
+       - Recommended actions for the machine operators.
+  expected_output: >
+    A list of 5 analyses (insight and indicator) structured neatly according to the `Output_data_analyzer_list` Pydantic schema.
+  agent: senior_data_analyzer

@@ -6,6 +6,7 @@ from src.project_flow.crews.developer.developer import Developer
 from src.project_flow.crews.file_analyzer.file_analyzer import FileAnalyzer
 from src.project_flow.crews.excel_analyzer.excel_analyzer import ExcelAnalyzer
 from src.project_flow.crews.json_analyzer.json_analyzer import JsonAnalyzer
+from src.project_flow.crews.prophet_crew.prophet_crew import ProphetAnalyzer
 from src.project_flow.crews.crew_anomali.crew_anomali import CrewAnomali
 import logging
 import traceback
@@ -97,5 +98,16 @@ def deteksi_anomali_excel(self, file: str):
         return str(result)
     except Exception as e:
         logger.error(f"Error in anomaly detection task: {str(e)}")
+        logger.error(traceback.format_exc())
+        raise e
+    
+@celery_app.task(bind=True, name='prophet_analyzer_task')
+def prophet_analyzer_task(self, file: str):
+    self.update_state(state='RUNNING', meta={'current':f"start job for: {file}"})
+    try:
+        result = ProphetAnalyzer().crew().kickoff(inputs={"file": file})
+        return result.json_dict
+    except Exception as e:
+        logger.error(f"Error in prophet analyzer task: {str(e)}")
         logger.error(traceback.format_exc())
         raise e
